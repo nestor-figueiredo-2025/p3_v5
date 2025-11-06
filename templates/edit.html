@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Registro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container my-4">
+    <h1 class="text-center mb-4">Editar Registro</h1>
+    
+    {% if error %}
+        <div class="error">
+            {{ error }}<br>
+            Caso o problema persista, entre em contato com o administrador do sistema.
+        </div>
+    {% endif %}
+    
+    <form action="/update/{{ record.titulo }}" method="post" class="row g-3">
+        <div class="col-md-6">
+            <label for="titulo" class="form-label">Título</label>
+            <input type="text" name="titulo" id="titulo" value="{{ record.titulo }}" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label for="nome" class="form-label">Nome</label>
+            <input type="text" name="nome" id="nome" value="{{ record.nome }}" class="form-control" required>
+        </div>
+        <div class="col-md-6">
+            <label for="tipo" class="form-label">Tipo</label>
+            <select name="tipo" id="tipo" class="form-select" required>
+                <option value="painel" {% if record.tipo == 'painel' %}selected{% endif %}>Painel</option>
+                <option value="totem" {% if record.tipo == 'totem' %}selected{% endif %}>Totem</option>
+                <option value="videowall" {% if record.tipo == 'videowall' %}selected{% endif %}>Videowall</option>
+                <option value="outros" {% if record.tipo == 'outros' %}selected{% endif %}>Outros</option>
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="bloco" class="form-label">Bloco</label>
+            <input type="text" name="bloco" id="bloco" value="{{ record.bloco }}" class="form-control">
+        </div>
+        <div class="col-md-6">
+            <label for="andar" class="form-label">Andar</label>
+            <input type="text" name="andar" id="andar" value="{{ record.andar }}" class="form-control">
+        </div>
+        <div class="col-md-6 form-check">
+            <input type="checkbox" name="ativo" id="ativo" class="form-check-input" {% if record.ativo %}checked{% endif %}>
+            <label for="ativo" class="form-check-label">Ativo</label>
+        </div>
+        <div class="col-md-6 form-check">
+            <input type="checkbox" name="monitorado" id="monitorado" class="form-check-input" {% if record.monitorado %}checked{% endif %}>
+            <label for="monitorado" class="form-check-label">Monitorado</label>
+        </div>
+        <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary">Salvar</button>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary ms-2">Cancelar</a>
+        </div>
+    </form>
+</body>
+</html>

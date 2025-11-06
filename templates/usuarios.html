@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Usuários</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container my-4">
+    <h2 class="mb-4">Usuários</h2>
+    {% if error %}
+        <div class="error">
+            {{ error }}<br>
+            Caso o problema persista, entre em contato com o administrador do sistema.
+        </div>
+    {% endif %}
+    <a href="{{ url_for('adicionar_usuario') }}" class="btn btn-success btn-sm mb-3"
+       {% if session.get('user_tipo') != 'adm' %}style="display:none"{% endif %}>
+       Novo Usuário
+    </a>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Matrícula</th>
+                    <th>Tipo</th>
+                    <th>Obs</th>
+                    <th style="width: 180px;">Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.nome }}</td>
+                    <td>
+                        <input type="text" id="matricula" name="matricula" value="{{ user.matricula if user else '' }}" required class="form-control">
+                    </td>
+                    <td>{{ user.tipo }}</td>
+                    <td>{{ user.obs }}</td>
+                    <td>
+                        <a href="{{ url_for('editar_usuario', matricula=user.matricula) }}" class="btn btn-secondary btn-sm me-1">Editar</a>
+                        <form action="{{ url_for('excluir_usuario', matricula=user.matricula) }}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-danger btn-sm">Excluir</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <a href="{{ url_for('index') }}" class="btn btn-outline-primary btn-sm mt-3">Voltar</a>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

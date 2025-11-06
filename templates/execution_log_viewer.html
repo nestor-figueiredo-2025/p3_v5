@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log Viewer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .filter {
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('index') }}" class="btn btn-secondary btn-sm mb-3">← Retornar</a>
+    <h1>Log Viewer</h1>
+    
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Timestamp</th>
+                <th>Message</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="logTable">
+            <!-- Log entries will be dynamically inserted here -->
+        </tbody>
+    </table>
+    <script>
+        async function fetchLogData() {
+            const response = await fetch('/static/execution_log.txt');
+            const logData = await response.text();
+            const lines = logData.split('\n').filter(line => line.trim());
+            const lastCycleIndex = lines.lastIndexOf("===================");
+            const lastCycleLogs = lastCycleIndex !== -1 ? lines.slice(lastCycleIndex + 1) : lines;
+            const logs = lastCycleLogs.map(line => {
+                const [timestamp, ...messageParts] = line.split(': ');
+                const message = messageParts.join(': ');
+                const status = message.includes('Sucesso') ? 'Sucesso' : 'Processado';
+                return { timestamp, message, status };
+            }).sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp)); // Ordenação decrescente
+            return logs.slice(-30); // Retornar apenas os últimos 30 registros
+        }
+
+        async function initializeLogs() {
+            const logs = await fetchLogData();
+            renderTable(logs);
+
+            searchInput.addEventListener('input', () => filterLogs(logs));
+            statusFilter.addEventListener('change', () => filterLogs(logs));
+        }
+
+        function renderTable(logs) {
+            logTable.innerHTML = logs.map(log => `
+                <tr>
+                    <td>${log.timestamp}</td>
+                    <td>${log.message}</td>
+                    <td>${log.status}</td>
+                </tr>
+            `).join('');
+        }
+
+        function filterLogs(logs) {
+            const searchTerm = searchInput.value.toLowerCase();
+            const selectedStatus = statusFilter.value;
+            const filteredLogs = logs.filter(log => 
+                log.message.toLowerCase().includes(searchTerm) &&
+                (selectedStatus === '' || log.status === selectedStatus)
+            );
+            renderTable(filteredLogs);
+        }
+
+        const logTable = document.getElementById('logTable');
+        const searchInput = document.getElementById('search');
+        const statusFilter = document.getElementById('status');
+
+        initializeLogs();
+    </script>
+    <script>
+        // Atualizar a página inteira a cada 1 minuto
+        setInterval(() => {
+            location.reload();
+        }, 6000); 
+    </script>
+</body>
+</html>
