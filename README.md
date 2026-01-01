@@ -23,3 +23,4 @@ Agradecimentos:
 https://chat.deepseek.com/
 https://chatgpt.com/
 https://www.hashtagtreinamentos.com/
+https://notebooklm.google.com/
